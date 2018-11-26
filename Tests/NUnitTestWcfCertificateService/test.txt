@@ -1,0 +1,29 @@
+My Test File.
+
+the Root Certificate: makecert -crl -n "CN=RootCaClientTest" -r -sv RootCaClientTest.pvk RootCaClientTest.crl
+Create and Install Your Temporary Client Certificate: makecert -sk MyKeyName -iv RootCaClientTest.pvk -n "CN=tempClientcert" -ic RootCaClientTest.cer -sr currentuser -ss my -sky signature -pe
+Create a Certificate Revocation List File from the Root Certificate: makecert -crl -n "CN=RootCaClientTest" -r -sv RootCaClientTest.pvk RootCaClientTest.crl
+
+Создание самозаверяющего сертификата корневого центра и экспорт закрытого ключа 
+Используйте средство MakeCert.exe со следующими коммутаторами. 
+-n subjectName. Задает имя субъекта. Согласно правилам, к имени субъекта добавляется префикс "CN = " для "Common Name". 
+-r. Указывает, что сертификат самозаверяющий. 
+-sv privateKeyFile. Указывает файл, содержащий контейнер закрытого ключа. 
+Например, следующая команда создает самозаверяющий сертификат с именем субъекта "CN=TempCA". 
+
+makecert -n "CN=TempCA" -r -sv TempCA.pvk TempCA.cer
+
+Будет предложено указать пароль для защиты закрытого ключа. Этот пароль необходим при создании сертификата, подписанного этим корневым сертификатом. 
+Создание нового сертификата, подписанного сертификатом корневого центра 
+Используйте средство MakeCert.exe со следующими коммутаторами. 
+-sk subjectKey. Расположение контейнера ключей субъекта, содержащего закрытый ключ. Если контейнер ключей не существует, он будет создан. Если ни один из параметров (-sk и sv) не используется, контейнер ключей с именем JoeSoft создается по умолчанию. 
+-n subjectName. Задает имя субъекта. Согласно правилам, к имени субъекта добавляется префикс "CN = " для "Common Name". 
+-iv issuerKeyFile. Задает файл закрытого ключа издателя. 
+-ic issuerCertFile. Задает расположение сертификата издателя. 
+Например, следующая команда создает сертификат, подписанный сертификатом корневого центра 
+TempCA
+, с именем субъекта 
+"CN=SignedByCA"
+, используя закрытый ключ издателя.
+
+makecert -sk SignedByCA -iv TempCA.pvk -n "CN=SignedByCA" -ic TempCA.cer SignedByCA.cer -sr currentuser -ss My
